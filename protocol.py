@@ -1,15 +1,15 @@
 import sys
-import logging
+import Side
 import InvalidMessageException
 import MsgType
 import MoveTurn
 
 class Protocol:
 
-    def MoveTurn(self):
-        bool end
-        bool again
-        int move
+    class MoveTurn:
+        end = 0
+        again = 0
+        move = 0
 
     def createMoveMsg (self, hole):
         return "MOVE" + hole + '\n'
@@ -33,7 +33,7 @@ class Protocol:
             return MsgType.STATE
         elif msg.startswith("END\n"):
             return MsgType.END
-        else
+        else:
             raise ValueError("Could not determine message type.")
 
 
@@ -83,7 +83,7 @@ class Protocol:
             moveTurn.move = -1
         else:
             try:
-                move_turn.move = int(msg_parts[1])
+                moveTurn.move = int(msgParts[1])
             except ValueError as e:
                 raise InvalidMessageException('Illegal value for move parameter:', str(e))
 
@@ -102,15 +102,15 @@ class Protocol:
         except ValueError:
             print('Invalid value for seed count');
 
-        move_turn.end=False
-        if msg_parts[3] == 'YOU\n':
-            move_turn.again = True
-        elif msg_parts[3] == 'OPP\n':
-            move_turn.again = False
-        elif msg_parts[3] == 'END\n':
-            move_turn.end = True
-            move_turn.again = False
+        moveTurn.end=False
+        if msgParts[3] == 'YOU\n':
+            moveTurn.again = True
+        elif msgParts[3] == 'OPP\n':
+            moveTurn.again = False
+        elif msgParts[3] == 'END\n':
+            moveTurn.end = True
+            moveTurn.again = False
         else:
-            raise InvalidMessageException('Illegal value for turn parameter:' + msg_parts[3])
+            raise InvalidMessageException('Illegal value for turn parameter:' + msgParts[3])
 
-        return move_turn
+        return moveTurn

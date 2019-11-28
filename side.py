@@ -1,18 +1,15 @@
 from enum import Enum
-"""
-The side of the Kalah board a player can choose.
-"""
 
 class Side(Enum):
-    NORTH
-    SOUTH
+    NORTH = 1
+    SOUTH = 0
     """
-    @return the side opposite to this one. 
+    @return the side opposite to this one.
     """
     def opposite(self):
-        if self == NORTH:
-            return SOUTH
-        elif self == SOUTH:
-            return NORTH
+        if self == self.NORTH:
+            return self.SOUTH
+        elif self == self.SOUTH:
+            return self.NORTH
         else:
-            return NORTH
+            return self.NORTH
