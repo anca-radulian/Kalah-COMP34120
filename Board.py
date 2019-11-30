@@ -15,11 +15,9 @@ class Board:
     @see #board
     """
     __NORTH_ROW = 0
-
-    #@see #board
     __SOUTH_ROW = 1
 
-    #The number of holes per side (must be >= 1).
+    # The number of holes per side (must be >= 1).
     __holes = 0
 
     """
@@ -37,6 +35,7 @@ class Board:
     @return The index of side "side" for the first dimension of "board".
     """
 
+
 def indexOfSide(self, side):
     if side == self.NORTH:
         return self.NORTH_ROW
@@ -44,6 +43,7 @@ def indexOfSide(self, side):
         return self.SOUTH_ROW
     else:
         return -1
+
 
 """
  Creates a new board.

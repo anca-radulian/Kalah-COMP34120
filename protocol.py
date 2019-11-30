@@ -1,20 +1,20 @@
-import sys
-import Side
-import InvalidMessageException
-import MsgType
-import MoveTurn
+from Side import Side
+from InvalidMessageException import InvalidMessageException
+from MsgType import MsgType
+
+
+class MoveTurn:
+    end = 0
+    again = 0
+    move = 0
+
 
 class Protocol:
 
-    class MoveTurn:
-        end = 0
-        again = 0
-        move = 0
-
-    def createMoveMsg (self, hole):
+    def createMoveMsg(self, hole):
         return "MOVE" + hole + '\n'
 
-    def createSwapMsg (self):
+    def createSwapMsg(self):
         return "SWAP\n"
 
     """
@@ -26,7 +26,8 @@ class Protocol:
      *         determined.
      *
      """
-    def getMessageType (self, msg):
+
+    def getMessageType(self, msg):
         if msg.startswith("START;"):
             return MsgType.START
         elif msg.startswith("CHANGE;"):
@@ -36,8 +37,7 @@ class Protocol:
         else:
             raise ValueError("Could not determine message type.")
 
-
-    """from kagent.game.move_turn ie(msg) returns MsgType.START
+    """
      * @param msg The message.
      * @return "true" if this agent is the starting player (South), "false"
      *         otherwise.
@@ -45,7 +45,8 @@ class Protocol:
      * @see #getMessageType(String)
      *
      """
-    def interpretStartMsg (self, msg):
+
+    def interpretStartMsg(self, msg):
         if msg[-1] != '\n':
             raise InvalidMessageException("Message not terminated with 0x0A character.")
         position = msg[6:-1]
@@ -69,7 +70,8 @@ class Protocol:
      * @throws InvalidMessageException if the message is not well-formed.
      * @see #getMessageType(String)
      """
-    def interpretStateMsg (msg, board):
+
+    def interpretStateMsg(self, msg, board):
         moveTurn = MoveTurn()
 
         if msg[-1] != '\n':
@@ -78,31 +80,33 @@ class Protocol:
         if len(msg.split(';', 4)) != 4:
             raise InvalidMessageException('Missing arguments.')
 
-        msgParts = msg.split(';',4)
+        msgParts = msg.split(';', 4)
         if msgParts[1] == 'SWAP':
             moveTurn.move = -1
         else:
             try:
                 moveTurn.move = int(msgParts[1])
             except ValueError as e:
-                raise InvalidMessageException('Illegal value for move parameter:', str(e))
+                raise InvalidMessageException('Illegal value for move parameter:' + str(e))
 
-        boardParts = msgParts[2].split(','-1)
-        if 2*board.getNoOfHoles()+1 != len(boardParts):
-            raise InvalidMessageException('Board dimensions in message (' + str(len(boardParts)) + 'entries) are not as expected (' + str(2*board.getNoOfHoles()+1) + 'entries')
+        boardParts = msgParts[2].split(',', - 1)
+        if 2 * board.getNoOfHoles() + 1 != len(boardParts):
+            raise InvalidMessageException(
+                'Board dimensions in message (' + str(len(boardParts)) + 'entries) are not as expected (' + str(
+                    2 * board.getNoOfHoles() + 1) + 'entries')
 
         try:
-            for i in range(0,board.getNoOfHoles()):
-                board.setSeeds(Side.NORTH, i+1, int(boardParts[i]));
-            board.setSeedsInStore(Side.NORTH, int(boardParts[board.getNoOfHoles()]));
+            for i in range(0, board.getNoOfHoles()):
+                board.setSeeds(Side.NORTH, i + 1, int(boardParts[i]))
+            board.setSeedsInStore(Side.NORTH, int(boardParts[board.getNoOfHoles()]))
 
-            for i in range(0,board.getNoOfHoles()):
-                board.setSeeds(Side.SOUTH, i+1, int(i + boardParts[i]));
-            board.setSeedsInStore(Side.SOUTH, int(boardParts[2*board.getNoOfHoles()+1]));
+            for i in range(0, board.getNoOfHoles()):
+                board.setSeeds(Side.SOUTH, i + 1, int(i + boardParts[i]))
+            board.setSeedsInStore(Side.SOUTH, int(boardParts[2 * board.getNoOfHoles() + 1]))
         except ValueError:
-            print('Invalid value for seed count');
+            print('Invalid value for seed count')
 
-        moveTurn.end=False
+        moveTurn.end = False
         if msgParts[3] == 'YOU\n':
             moveTurn.again = True
         elif msgParts[3] == 'OPP\n':

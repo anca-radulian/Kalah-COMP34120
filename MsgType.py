@@ -4,7 +4,7 @@ Types of messages the game engine can send to the agent.
 from enum import Enum
 
 
-class msgType(Enum):
+class MsgType(Enum):
     """
     message announcing the start of the game ("new_match" message)
     """

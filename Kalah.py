@@ -1,9 +1,9 @@
-import Side
-import Board
+from Side import Side
+from Board import Board
 
 
 class Kalah:
-    _board = [[0 for x in range(2)] for y in range(1)]
+    _board = Board()
 
     def _init_(self, board):
         if board is None:
@@ -19,7 +19,7 @@ class Kalah:
   """
 
     def isLegalMove(self, move):
-        return isLegalMove(self.board, move)
+        return self.isLegalMoveOnBoard(self.board, move)
 
     """
   Performs a move on the underlying board. The move must be legal. If
@@ -30,18 +30,18 @@ class Kalah:
   """
 
     def makeMove(self, move):
-        return makeMove(self.board, move)
+        return self.makeMoveOnBoard(self.board, move)
 
     # Checks whether the game is over (based on the board).
     def gameOver(self):
-        return gameOver(self.board)
+        return self.gameOverOnBoard(self.board)
 
     """
     Checks whether a given move is legal on a given board. The move
     is not actually made.
   """
 
-    def isLegalMoveOnBoard(board, move):
+    def isLegalMoveOnBoard(self, board, move):
         return (move.getHole() <= board.getNoOfHoles()) and (board.getSeeds(move.getSide(), move.getHole()) != 0)
 
     """
@@ -52,7 +52,7 @@ class Kalah:
     as argument.
   """
 
-    def makeMoveOnBoard(board, move):
+    def makeMoveOnBoard(self, board, move):
         """
     1. The counters are lifted from this hole and sown in anti-clockwise direction, starting
         with the next hole. The player's own kalahah is included in the sowing, but the
@@ -122,9 +122,9 @@ class Kalah:
 
         # game over?
         finishedSide = None
-        if holesEmpty(board, move.getSide()):
+        if self.holesEmpty(board, move.getSide()):
             finishedSide = move.getSide()
-        elif holesEmpty(board, move.getSide().opposite()):
+        elif self.holesEmpty(board, move.getSide().opposite()):
             finishedSide = move.getSide().opposite()
 
         # note: it is possible that both sides are finished, but then
@@ -138,9 +138,7 @@ class Kalah:
                 seeds += board.getSeeds(collectingSide, hole)
                 board.setSeeds(collectingSide, hole, 0)
 
-            board.addSeedsToStore(collectingSides, seeds)
-
-        board.notifyObservers(move)
+            board.addSeedsToStore(collectingSide, seeds)
 
         # whose turn is it?
         if sowHole == 0:  # the store (implies (sowSide == move.getSide()))
@@ -149,7 +147,7 @@ class Kalah:
             return move.getSide().opposite()
 
     # Checks whether all holes on a given side are empty.
-    def holesEmpty(board, side):
+    def holesEmpty(self, board, side):
         for hole in range(1, board.getNoOfHoles() + 1):
             if board.getSeeds(side, hole) != 0:
                 return False
@@ -157,6 +155,6 @@ class Kalah:
         return True
 
     # Checks whether the game is over (based on the board).
-    def gameOverOnBoard(board):
+    def gameOverOnBoard(self, board):
         # The game is over if one of the agents can't make another move.
-        return holesEmpty(board, Side.NORTH) or holesEmpty(board, Side.SOUTH)
+        return self.holesEmpty(board, Side.NORTH) or self.holesEmpty(board, Side.SOUTH)
