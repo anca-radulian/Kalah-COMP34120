@@ -4,8 +4,8 @@ from MsgType import MsgType
 
 
 class MoveTurn:
-    end = 0
-    again = 0
+    end = False
+    again = False
     move = 0
 
 

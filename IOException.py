@@ -1,4 +1,4 @@
-class InvalidMessageException(object):
+class IOException(object):
     def __init__(self, message):
         self.message = message
         print(message)
