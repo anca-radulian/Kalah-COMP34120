@@ -1,5 +1,4 @@
 from Side import Side
-from Board import Board
 
 
 class Kalah(object):
