@@ -31,7 +31,6 @@ class Board:
     @return The index of side "side" for the first dimension of "board".
     """
 
-
     def indexOfSide(self, side):
         if side == side.NORTH:
             return self.NORTH_ROW
@@ -39,7 +38,6 @@ class Board:
             return self.SOUTH_ROW
         else:
             return -1
-
 
     """
      Creates a new board.
@@ -50,7 +48,6 @@ class Board:
      @throws IllegalArgumentException if any of the arguments is outside of
              the valid range.
     """
-
 
     def __init__(self, currentHoles, currentSeeds):
         if currentHoles < 1:
@@ -65,7 +62,6 @@ class Board:
             self.board[self.NORTH_ROW][i] = currentSeeds
             self.board[self.SOUTH_ROW][i] = currentSeeds
 
-
     """
      Creates a new board as the copy of a given one. Both copies can then be
      altered independently.
@@ -73,7 +69,6 @@ class Board:
      @param original The board to copy.
      @see #clone()
     """
-
 
     def copyBoard(self, original):
         self.holes = original.holes
@@ -83,7 +78,6 @@ class Board:
             self.board[self.NORTH_ROW][i] = original.board[self.NORTH_ROW][i]
             self.board[self.SOUTH_ROW][i] = original.board[self.SOUTH_ROW][i]
 
-
     """
      Creates a copy of the current board. Both copies can then be altered
      independently.
@@ -92,19 +86,15 @@ class Board:
      @see #Board(Board)
     """
 
-
     def clone(self):
         return self.copyBoard(self)
-
 
     """
      @return The number of holes per side (will be >= 1).
     """
 
-
     def getNoOfHoles(self):
         return self.holes
-
 
     """
      Get the number of seeds in a hole.
@@ -114,7 +104,6 @@ class Board:
      @throws IllegalArgumentException if the hole number is invalid.
     """
 
-
     def getSeeds(self, side, hole):
         if hole < 1 or hole > self.holes:
             numberOfHoles = len(self.board[self.NORTH_ROW])
@@ -122,7 +111,6 @@ class Board:
                 "Hole number must be between 1 and " + str(numberOfHoles) + " but was " + hole + ".")
 
         return self.board[self.indexOfSide(side)][hole]
-
 
     """
      Sets the number of seeds in a hole.
@@ -132,7 +120,6 @@ class Board:
      @throws IllegalArgumentException if any of the arguments is outside of
              the valid range.
     """
-
 
     def setSeeds(self, side, hole, seeds):
         if hole < 1 or hole > self.holes:
@@ -153,7 +140,6 @@ class Board:
              the valid range.
     """
 
-
     def addSeeds(self, side, hole, seeds):
         if hole < 1 or hole > self.holes:
             numberOfHoles = len(self.board[self.NORTH_ROW])
@@ -173,13 +159,11 @@ class Board:
      @throws IllegalArgumentException if the hole number is invalid.
     """
 
-
     def getSeedsOp(self, side, hole):
         if hole < 1 or hole > self.holes:
             raise Exception("Hole number must be between 1 and " + self.holes + " but was " + hole + ".")
 
         return self.board[1 - self.indexOfSide(side)][self.holes + 1 - hole]
-
 
     """
      Sets the number of seeds in a hole opposite to a given one.
@@ -190,7 +174,6 @@ class Board:
      @throws IllegalArgumentException if any of the arguments is outside of
              the valid range.
     """
-
 
     def setSeedsOp(self, side, hole, seeds):
         if hole < 1 or hole > self.holes:
@@ -212,7 +195,6 @@ class Board:
              the valid range.
     """
 
-
     def addSeedsOp(self, side, hole, seeds):
         if hole < 1 or hole > self.holes:
             numberOfHoles = len(self.board[self.NORTH_ROW])
@@ -229,10 +211,8 @@ class Board:
      @return The number of seeds in the store.
     """
 
-
     def getSeedsInStore(self, side):
         return self.board[self.indexOfSide(side)][0]
-
 
     """
      Sets the number of seeds in a store.
@@ -240,7 +220,6 @@ class Board:
      @param seeds The number of seeds that shall be in the store afterwards (>= 0).
      @throws IllegalArgumentException if the number of seeds is invalid.
     """
-
 
     def setSeedsInStore(self, side, seeds):
         if seeds < 0:
@@ -254,7 +233,6 @@ class Board:
      @param seeds The number (>= 0) of seeds to put into (add to) the store.
      @throws IllegalArgumentException if the number of seeds is invalid.
     """
-
 
     def addSeedsToStore(self, side, seeds):
         if seeds < 0:

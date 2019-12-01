@@ -2,10 +2,8 @@ from Side import Side
 from Board import Board
 
 
-class Kalah:
-    _board = Board()
-
-    def _init_(self, board):
+class Kalah(object):
+    def __init__(self, board):
         if board is None:
             raise TypeError("Board is null.")
         self.board = board

@@ -13,7 +13,7 @@ class Move:
    the move and distributed. It has to be >= 1.
   """
 
-    def _init_(self, side, hole):
+    def __init__(self, side, hole):
         if hole < 1:
             raise ValueError('Hole numbers must be >= 1, but ' + hole + ' was given.')
 
