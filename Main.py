@@ -3,6 +3,7 @@ from Board import Board
 from Kalah import Kalah
 from Side import Side
 from Move import Move
+from Minimax import Minimax
 
 """
 The main application class. It also provides methods for communication
@@ -36,11 +37,11 @@ def calculateNextBestMove(board, side):
     maxScore = 0
     maxScoreIndex = 1
     kalah = Kalah(board)
-    for i in range(1, 8, 1):
+    for i in range(1, 8):
         move = Move(side, i)
         if kalah.isLegalMove(move):
             newKalah = Kalah(board.copyBoard(board))
-            scores[i] = alphaBetaMiniMax(newKalah.makeMove(move))
+            scores[i] = Minimax(side).alphabeta(newKalah, -100, 100, side, 7)
         else:
             scores[i] = 0
         if maxScore < scores[i]:
@@ -48,10 +49,6 @@ def calculateNextBestMove(board, side):
             maxScore = scores[i]
 
     return maxScoreIndex
-
-
-def alphaBetaMiniMax(board):
-    return 0
 
 
 main()

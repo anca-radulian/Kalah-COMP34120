@@ -56,8 +56,7 @@ class Board:
             raise Exception("There has to be a non-negative number of seeds, but " + currentSeeds + " were requested.")
 
         self.holes = currentHoles
-        self.board = [[0 for x in range(2)] for y in range(currentHoles + 1)]
-
+        self.board = [[0 for y in range(currentHoles + 1)] for y in range(currentHoles + 1)]
         for i in range(1, currentHoles + 1, 1):
             self.board[self.NORTH_ROW][i] = currentSeeds
             self.board[self.SOUTH_ROW][i] = currentSeeds

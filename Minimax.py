@@ -1,26 +1,25 @@
-from Side import Side
 from Move import Move
+from Kalah import Kalah
 
 class Minimax:
-    def __init__(self, player):
-      self.player = player
+    def __init__(self, side):
+        self.mySide = side
 
-    def alphabeta(self, kalahBoard, board, alpha, beta, player, depth):
-        value = 0
+    def alphabeta(self, kalahBoard, alpha, beta, side, depth):
+        board = kalahBoard.getBoard()
 
-        if kalahBoard.gameOverOnBoard(board) or depth <= 0:
-            value = self.evalHeuristics(board)
-        elif player == self.player:
+        if kalahBoard.gameOver() or depth <= 0:
+            value = self.evalHeuristics(kalahBoard.getBoard())
+        elif side == self.mySide:
             value = - 999  # -INF
-
-            for x in range(1, 8):
+            for i in range(1, 8):
                 boardCopy = board.copyBoard(board)
-                side = Side()  # might return always North??
-                move = Move(side, x)
+                kalahCopy = Kalah(boardCopy)
+                move = Move(side, i)
 
-                if kalahBoard.isLegalMove(boardCopy, move):
-                    playerMove = kalahBoard.makeMove(boardCopy, move)
-                    value = max(value, self.alphabeta(kalahBoard, boardCopy, alpha, beta, playerMove, depth - 1))
+                if kalahCopy.isLegalMove(move):
+                    nextSide = kalahCopy.makeMove(move)
+                    value = max(value, self.alphabeta(kalahCopy, alpha, beta, nextSide, depth - 1))
                     alpha = max(value, alpha)
 
                     if alpha >= beta:
@@ -31,14 +30,14 @@ class Minimax:
         else:  # opponent
             value = 999  # INF
 
-            for x in range(1, 8):
+            for i in range(1, 8):
                 boardCopy = board.copyBoard(board)
-                side = Side()  # might return always North??
-                move = Move(side.opposite(), x)
+                kalahCopy = Kalah(boardCopy)
+                move = Move(side, i)
 
-                if kalahBoard.isLegalMove(boardCopy, move):
-                    playerMove = kalahBoard.makeMove(boardCopy, move)
-                    value = min(value, self.alphabeta(kalahBoard, boardCopy, alpha, beta, playerMove, depth - 1))
+                if kalahCopy.isLegalMove(move):
+                    nextSide = kalahCopy.makeMove(move)
+                    value = min(value, self.alphabeta(kalahCopy, alpha, beta, nextSide, depth - 1))
                     beta = min(value, beta)
 
                     if alpha >= beta:
@@ -48,6 +47,7 @@ class Minimax:
 
         return value
 
-
     def evalHeuristics(self, board):
-      return 0
+        # Calculate a score based on how many seeds are in the store based on the move
+        score = board.getSeedsInStore()
+        return score
