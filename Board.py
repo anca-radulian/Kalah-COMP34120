@@ -8,6 +8,7 @@
 
  Initially, there is the same number of "seeds" in each hole.
 """
+from Side import Side
 
 
 class Board:
@@ -32,9 +33,9 @@ class Board:
     """
 
     def indexOfSide(self, side):
-        if side == side.NORTH:
+        if side == Side.NORTH:
             return self.NORTH_ROW
-        elif side == side.NORTH:
+        elif side == Side.SOUTH:
             return self.SOUTH_ROW
         else:
             return -1
@@ -56,7 +57,7 @@ class Board:
             raise Exception("There has to be a non-negative number of seeds, but " + currentSeeds + " were requested.")
 
         self.holes = currentHoles
-        self.board = [[0 for y in range(currentHoles + 1)] for y in range(currentHoles + 1)]
+        self.board = [[0 for y in range(self.holes + 1)] for x in range(2)]
         for i in range(1, currentHoles + 1, 1):
             self.board[self.NORTH_ROW][i] = currentSeeds
             self.board[self.SOUTH_ROW][i] = currentSeeds
@@ -70,13 +71,12 @@ class Board:
     """
 
     def copyBoard(self, original):
-        self.holes = original.holes
-        self.board = [[0 for x in range(2)] for y in range(self.holes + 1)]
+        newBoard = Board(7, 7)
 
-        for i in range(1, self.holes + 1, 1):
-            self.board[self.NORTH_ROW][i] = original.board[self.NORTH_ROW][i]
-            self.board[self.SOUTH_ROW][i] = original.board[self.SOUTH_ROW][i]
-
+        for i in range(1, newBoard.holes + 1, 1):
+            newBoard.board[newBoard.NORTH_ROW][i] = original.board[original.NORTH_ROW][i]
+            newBoard.board[newBoard.SOUTH_ROW][i] = original.board[original.SOUTH_ROW][i]
+        return newBoard
     """
      Creates a copy of the current board. Both copies can then be altered
      independently.

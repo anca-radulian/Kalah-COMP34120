@@ -1,25 +1,14 @@
-class Side(object):
+from enum import Enum
+
+
+class Side(Enum):
     NORTH = 1
     SOUTH = 0
 
-    def __init__(self):
-        self.side = self.NORTH
-    """
-    @return the side opposite to this one.
-    """
-    def opposite(self):
-        if self.side == self.NORTH:
-            return self.SOUTH
-        elif self.side == self.SOUTH:
-            return self.NORTH
+    def opposite(side):
+        if side == Side.NORTH:
+            return Side.SOUTH
+        elif side == Side.SOUTH:
+            return Side.NORTH
         else:
-            return self.NORTH
-
-    def myTurn(self, side):
-        return side.side == self.side
-
-    def setSouth(self):
-        self.side = self.SOUTH
-
-    def setNorth(self):
-        self.side = self.NORTH
+            return Side.NORTH

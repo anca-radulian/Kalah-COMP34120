@@ -25,19 +25,19 @@ def recvMsg():
 # The main method, invoked when the program is started.
 def main():
     board = Board(7, 7)
-    side = Side()
-    side.setSouth()
-    calculateNextBestMove(board, side)
+    mySide = Side.SOUTH
+    calculateNextBestMove(board, mySide)
     return 0
 
 
 # returns the move
 def calculateNextBestMove(board, side):
-    scores = []
+    scores = [0] * 8
     maxScore = 0
     maxScoreIndex = 1
     kalah = Kalah(board)
     for i in range(1, 8):
+        print(i)
         move = Move(side, i)
         if kalah.isLegalMove(move):
             newKalah = Kalah(board.copyBoard(board))

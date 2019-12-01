@@ -9,7 +9,7 @@ class Minimax:
         board = kalahBoard.getBoard()
 
         if kalahBoard.gameOver() or depth <= 0:
-            value = self.evalHeuristics(kalahBoard.getBoard())
+            value = self.evalHeuristics(kalahBoard.getBoard(), side)
         elif side == self.mySide:
             value = - 999  # -INF
             for i in range(1, 8):
@@ -47,7 +47,7 @@ class Minimax:
 
         return value
 
-    def evalHeuristics(self, board):
+    def evalHeuristics(self, board, side):
         # Calculate a score based on how many seeds are in the store based on the move
-        score = board.getSeedsInStore()
+        score = board.getSeedsInStore(side)
         return score

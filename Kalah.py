@@ -95,14 +95,14 @@ class Kalah(object):
         for extra in range(extra, 0, -1):
             sowHole += 1
             if sowHole == 1:  # last pit was a store
-                sowSide = sowSide.opposite()
+                sowSide = Side.opposite(sowSide)
             if sowHole > holes:
                 if sowSide == move.getSide():
                     sowHole = 0  # sow to the store now
                     board.addSeedsToStore(sowSide, 1)
                     continue
                 else:
-                    sowSide = sowSide.opposite()
+                    sowSide = Side.opposite(sowSide)
                     sowHole = 1
 
             # sow to hole
@@ -121,8 +121,8 @@ class Kalah(object):
         finishedSide = None
         if self.holesEmpty(board, move.getSide()):
             finishedSide = move.getSide()
-        elif self.holesEmpty(board, move.getSide().opposite()):
-            finishedSide = move.getSide().opposite()
+        elif self.holesEmpty(board, Side.opposite(move.getSide())):
+            finishedSide = Side.opposite(move.getSide())
 
         # note: it is possible that both sides are finished, but then
         # there are no seeds to collect anyway
@@ -130,7 +130,7 @@ class Kalah(object):
 
             # collect the remaining seeds:
             seeds = 0
-            collectingSide = finishedSide.opposite()
+            collectingSide = Side.opposite(finishedSide)
             for hole in range(1, holes + 1):
                 seeds += board.getSeeds(collectingSide, hole)
                 board.setSeeds(collectingSide, hole, 0)
@@ -141,7 +141,7 @@ class Kalah(object):
         if sowHole == 0:  # the store (implies (sowSide == move.getSide()))
             return move.getSide()  # move again
         else:
-            return move.getSide().opposite()
+            return Side.opposite(move.getSide())
 
     # Checks whether all holes on a given side are empty.
     def holesEmpty(self, board, side):
@@ -154,4 +154,4 @@ class Kalah(object):
     # Checks whether the game is over (based on the board).
     def gameOverOnBoard(self, board):
         # The game is over if one of the agents can't make another move.
-        return self.holesEmpty(board, Side.NORTH) or self.holesEmpty(board, Side.SOUTH)
+        return self.holesEmpty(board, Side.SOUTH) or self.holesEmpty(board, Side.NORTH)
