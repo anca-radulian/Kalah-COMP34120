@@ -12,10 +12,10 @@ class MoveTurn:
 class Protocol:
 
     def createMoveMsg(self, hole):
-        return "MOVE;" + str(hole) + '\n'
+        return "MOVE;" + str(hole)
 
     def createSwapMsg(self):
-        return "SWAP\n"
+        return "SWAP"
 
     """
      * Determines the type of a message received from the game engine. This

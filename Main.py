@@ -19,8 +19,8 @@ with the game engine.
 
 # Sends a message to the game engine.
 def sendMsg(msg):
-    print(msg, flush=True)
-
+    print(msg)
+    sys.stdout.flush()
 
 # Receives a message from the game engine.
 def recvMsg():
@@ -49,11 +49,11 @@ def main():
                     continue
                 elif messType == MsgType.STATE:
                     interpretStateMsg = protocol.interpretStateMsg(recvmsg, board)
-                    if interpretStateMsg.again and interpretStateMsg.move == -1: #if opponet does swap
+                    if interpretStateMsg.again and interpretStateMsg.move == -1:  # if opponet does swap
                         mySide = Side.opposite(mySide)
                         move = calculateNextBestMove(board, mySide)
                         sendMsg(protocol.createMoveMsg(move))
-                    elif interpretStateMsg.again and n != 0: # if we swap
+                    elif interpretStateMsg.again and n != 0:  # if we swap
                         if interpretStateMsg.move <= 2:
                             mySide = Side.opposite(mySide)
                             sendMsg(protocol.createSwapMsg())  # Stab
@@ -73,6 +73,7 @@ def main():
     except IOException:
         ioExceptionMessage = IOException("IOException")
         print(ioExceptionMessage.getMessage())
+
 
 # returns the move
 def calculateNextBestMove(board, side):
