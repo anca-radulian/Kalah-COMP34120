@@ -47,7 +47,7 @@ def main():
             try:
                 protocol = Protocol()
                 if protocol.getMessageType(recvmsg) == MsgType.START:
-                    interpretStartMsg = protocol.interpretStartMsg(recvMsg)
+                    interpretStartMsg = protocol.interpretStartMsg(recvmsg)
                     mySide = Side.SOUTH if interpretStartMsg else Side.NORTH
                     if interpretStartMsg:
                         n = 0
