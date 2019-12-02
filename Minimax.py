@@ -51,3 +51,17 @@ class Minimax:
         # Calculate a score based on how many seeds are in the store based on the move
         score = board.getSeedsInStore(side)
         return score
+
+    def hoardInLeftmostHole(self, board, side):
+        # Calculate the score based on how many seeds there are in the leftmost hole.
+        score = board.getSeeds(side, 1)
+        return score
+
+    def hoardOnMySide(self, board, side):
+        # Calculate the score based on how many seeds there are on my side.
+        score = 0
+
+        for i in range(1, 8):
+            score += board.getSeeds(side, i)
+
+        return score
