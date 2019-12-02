@@ -12,7 +12,7 @@ class MoveTurn:
 class Protocol:
 
     def createMoveMsg(self, hole):
-        return "MOVE" + hole + '\n'
+        return "MOVE;" + str(hole) + '\n'
 
     def createSwapMsg(self):
         return "SWAP\n"
