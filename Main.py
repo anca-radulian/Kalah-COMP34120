@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import sys
 from Board import Board
 from Kalah import Kalah
@@ -25,17 +27,6 @@ def recvMsg():
     msg = sys.stdin.readline()
     return msg
 
-
-# The main method, invoked when the program is started.
-# def main():
-#     board = Board(7, 7)
-#     mySide = Side.SOUTH
-#     calculateNextBestMove(board, mySide)
-#     return 0
-
-def makeBestMove(node):
-    sendMsg("Protocol.createMoveMsg(node.getBestMove())")  # Stab
-
 # The main method, invoked when the program is started.
 def main():
     try:
@@ -46,7 +37,8 @@ def main():
             recvmsg = recvMsg()
             try:
                 protocol = Protocol()
-                if protocol.getMessageType(recvmsg) == MsgType.START:
+                messType = protocol.getMessageType(recvmsg)
+                if messType == MsgType.START:
                     interpretStartMsg = protocol.interpretStartMsg(recvmsg)
                     mySide = Side.SOUTH if interpretStartMsg else Side.NORTH
                     if interpretStartMsg:
@@ -55,7 +47,7 @@ def main():
                         sendMsg(protocol.createMoveMsg(move))
                         continue
                     continue
-                elif protocol.getMessageType(recvmsg) == MsgType.STATE:
+                elif messType == MsgType.STATE:
                     interpretStateMsg = protocol.interpretStateMsg(recvmsg, board)
                     if interpretStateMsg.again and interpretStateMsg.move == -1: #if opponet does swap
                         mySide = Side.opposite(mySide)

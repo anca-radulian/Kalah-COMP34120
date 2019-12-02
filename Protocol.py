@@ -90,10 +90,10 @@ class Protocol:
                 raise InvalidMessageException('Illegal value for move parameter:' + str(e))
 
         boardParts = msgParts[2].split(',', - 1)
-        if 2 * board.getNoOfHoles() + 1 != len(boardParts):
+        if 2 * (board.getNoOfHoles() + 1) != len(boardParts):
             raise InvalidMessageException(
                 'Board dimensions in message (' + str(len(boardParts)) + 'entries) are not as expected (' + str(
-                    2 * board.getNoOfHoles() + 1) + 'entries')
+                    2 * board.getNoOfHoles()) + 'entries')
 
         try:
             for i in range(0, board.getNoOfHoles()):
@@ -101,7 +101,7 @@ class Protocol:
             board.setSeedsInStore(Side.NORTH, int(boardParts[board.getNoOfHoles()]))
 
             for i in range(0, board.getNoOfHoles()):
-                board.setSeeds(Side.SOUTH, i + 1, int(i + boardParts[i]))
+                board.setSeeds(Side.SOUTH, i + 1, int(boardParts[i + board.getNoOfHoles() + 1]))
             board.setSeedsInStore(Side.SOUTH, int(boardParts[2 * board.getNoOfHoles() + 1]))
         except ValueError:
             print('Invalid value for seed count')
