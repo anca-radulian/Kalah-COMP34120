@@ -73,7 +73,7 @@ class Board:
     def copyBoard(self, original):
         newBoard = Board(7, 7)
 
-        for i in range(1, newBoard.holes + 1, 1):
+        for i in range(0, newBoard.holes + 1, 1):
             newBoard.board[newBoard.NORTH_ROW][i] = original.board[original.NORTH_ROW][i]
             newBoard.board[newBoard.SOUTH_ROW][i] = original.board[original.SOUTH_ROW][i]
         return newBoard

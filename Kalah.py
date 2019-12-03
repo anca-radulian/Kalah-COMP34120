@@ -73,7 +73,7 @@ class Kalah(object):
 
         holes = board.getNoOfHoles()
         receivingPits = 2 * holes + 1  # sow into: all holes + 1 store
-        rounds = seedsToSow / receivingPits  # sowing rounds
+        rounds = int(seedsToSow / receivingPits)  # sowing rounds
         extra = seedsToSow % receivingPits  # seeds for the last partial round
 
         """
@@ -126,7 +126,7 @@ class Kalah(object):
 
         # note: it is possible that both sides are finished, but then
         # there are no seeds to collect anyway
-        if finishedSide is None:
+        if finishedSide is not None:
 
             # collect the remaining seeds:
             seeds = 0
