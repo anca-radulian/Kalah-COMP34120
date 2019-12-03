@@ -4,7 +4,8 @@ from Side import Side
 
 
 class Minimax:
-    previousMove = 0
+    isPreviousMoveFromRightMostHole = 0
+
     def __init__(self, side):
         self.mySide = side
 
@@ -12,7 +13,7 @@ class Minimax:
         board = kalahBoard.getBoard()
 
         if kalahBoard.gameOver() or depth <= 0:
-            value = self.evalHeuristics(kalahBoard.getBoard(), side, self.previousMove)
+            value = self.evalHeuristics(kalahBoard.getBoard(), side, self.isPreviousMoveFromRightMostHole)
         elif side == self.mySide:
             value = - 9999  # -INF
             for i in range(1, 8):
@@ -21,8 +22,9 @@ class Minimax:
                 move = Move(side, i)
 
                 if kalahCopy.isLegalMove(move):
+                    self.isPreviousMoveFromRightMostHole = self.isMoveFromRightMostHole(board, side, move.getHole())
                     nextSide = kalahCopy.makeMove(move)
-                    self.previousMove = move.getHole()
+
                     value = max(value, self.alphabeta(kalahCopy, alpha, beta, nextSide, depth - 1))
                     alpha = max(value, alpha)
 
@@ -63,10 +65,10 @@ class Minimax:
         h2 = self.hoardOnMySide(board, side)
         h3 = self.possibleMoves(board, side)
         h4 = self.seedsInStore(board, side)
-        h5 = self.chooseRightMostHole(board, side, previousMove)
+        h5 = self.isPreviousMoveFromRightMostHole
         h6 = self.seedsInStore(board, Side.opposite(side))
 
-        return h1 * w1 + w2 * h2 + h3 * w3 + h4 * w4 + w5 * h5 - h6 * w6
+        return h1 * w1 + w2 * h2 + h3 * w3 + h4 * w4 + h5*w5 - h6 * w6
 
     def seedsInStore(self, board, side):
         # Calculate a score based on how many seeds are in the store based on the move
@@ -96,13 +98,12 @@ class Minimax:
                 score += 1
         return score
 
-    def chooseRightMostHole(self, board, side, previousMove):
-        score = 0
-
+    def isMoveFromRightMostHole(self, board, side, move):
+        result = 0
 
         for i in range(7, 0, -1):
             if board.getSeeds(side, i) != 0:
-                if previousMove == i:
-                    score = 1
+                if move == i:
+                    result = 1
                 break
-        return score
+        return result
