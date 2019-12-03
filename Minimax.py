@@ -1,5 +1,7 @@
 from Move import Move
 from Kalah import Kalah
+from Side import Side
+
 
 class Minimax:
     def __init__(self, side):
@@ -48,6 +50,22 @@ class Minimax:
         return value
 
     def evalHeuristics(self, board, side):
+        w1 = 0.198649
+        w2 = 0.190084
+        w3 = 0.370793
+        w4 = 1
+        w5 = 0.565937
+
+        h1 = self.hoardInLeftmostHole(board, side)
+        h2 = self.hoardOnMySide(board, side)
+        h3 = self.possibleMoves(board, side)
+        h4 = self.seedsInStore(board, side)
+        h5 = self.seedsInStore(board, Side.opposite(side))
+
+        return h1*w1 + w2*h2 + h3*w3 + h4*w4 - h5*w5
+
+
+    def seedsInStore(self, board, side):
         # Calculate a score based on how many seeds are in the store based on the move
         score = board.getSeedsInStore(side)
         return score
@@ -64,4 +82,13 @@ class Minimax:
         for i in range(1, 8):
             score += board.getSeeds(side, i)
 
+        return score
+
+    def possibleMoves(self, board, side):
+        # Calculate how many holes are not empty
+        score = 0
+
+        for i in range(1, 8):
+            if  board.getSeeds(side, i)!= 0:
+                score +=1
         return score

@@ -49,7 +49,7 @@ def main():
                     continue
                 elif messType == MsgType.STATE:
                     interpretStateMsg = protocol.interpretStateMsg(recvmsg, board)
-                    if interpretStateMsg.again and interpretStateMsg.move == -1:  # if opponet does swap
+                    if interpretStateMsg.again and interpretStateMsg.move == -1:  # if opponent does swap
                         mySide = Side.opposite(mySide)
                         move = calculateNextBestMove(board, mySide)
                         sendMsg(protocol.createMoveMsg(move))
