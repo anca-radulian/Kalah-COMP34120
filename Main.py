@@ -86,7 +86,7 @@ def calculateNextBestMove(board, side):
         if kalah.isLegalMove(move):
             newKalah = Kalah(board.copyBoard(board))
             newKalah.makeMove(move)
-            scores[i] = Minimax(side).alphabeta(newKalah, -9999, 9999, side, 5)
+            scores[i] = Minimax(side).minimax(newKalah, -9999, 9999, side, 8)
 
         if maxScore < scores[i]:
             maxScoreIndex = i
