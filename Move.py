@@ -4,8 +4,6 @@ import Side
 # Represents a move (not a turn) in the Kalah game.
 class Move:
     # The side of the board the player making the move is playing on.
-    _side = []
-    _hole = 1
 
     """
    side = The side of the board the player making the move is playing on.

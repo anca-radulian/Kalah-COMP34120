@@ -5,27 +5,33 @@ from Side import Side
 
 class Minimax:
 
+    isPreviousMoveFromLeft = 0
+    isPreviousMoveFromRight = 0
+
     def __init__(self, side):
         self.mySide = side
 
     def minimax(self, kalah_board, alpha, beta, side, depth):
         board = kalah_board.getBoard()
         if depth == 0 or kalah_board.gameOver():
-            return self.evalHeuristics(kalah_board.getBoard(), side)
+            return self.evalHeuristics(kalah_board.getBoard())
 
         if side == self.mySide:
             max_evaluation = - 9999
+            self.isPreviousMoveFromLeft = 1
             for possible_move in range(1, 8):
                 board_copy = board.copyBoard(board)
                 kalah_copy = Kalah(board_copy)
                 move = Move(side, possible_move)
                 if kalah_copy.isLegalMove(move):
-                    kalah_copy.makeMove(move)
-                    evaluation = self.minimax(kalah_copy, alpha, beta, Side.opposite(side), depth - 1)
+                    self.isPreviousMoveFromRight = self.isMoveFromRightMostHole(board_copy, side, possible_move)
+                    nextSide = kalah_copy.makeMove(move)
+                    evaluation = self.minimax(kalah_copy, alpha, beta, nextSide, depth - 1)
                     max_evaluation = max(max_evaluation, evaluation)
                     alpha = max(alpha, evaluation)
                     if beta <= alpha:
                         break
+                    self.isPreviousMoveFromLeft = 0
             return max_evaluation
         else:
             min_evaluation = 9999
@@ -34,41 +40,43 @@ class Minimax:
                 kalah_copy = Kalah(board_copy)
                 move = Move(side, possible_move)
                 if kalah_copy.isLegalMove(move):
-                    kalah_copy.makeMove(move)
-                    evaluation = self.minimax(kalah_copy, alpha, beta, Side.opposite(side), depth - 1)
+                    nextSide = kalah_copy.makeMove(move)
+                    evaluation = self.minimax(kalah_copy, alpha, beta, nextSide, depth - 1)
                     min_evaluation = min(min_evaluation, evaluation)
                     beta = min(beta, evaluation)
                     if beta <= alpha:
                         break
             return min_evaluation
 
-    def evalHeuristics(self, board, side):
-        w1 = 0.741
-        w2 = 0.325
-        w3 = 0.898
-        w4 = 0.752
-        w5 = 1
-        w6 = 0.797
-        w7 = 1
+    def evalHeuristics(self, board):
+        # Weights depth 9
+        w1 = 0.675
+        w2 = 0.275
+        w3 = 0.675
+        w4 = 1
+        w5 = 0.5
+        w6 = 0.7
+        w7 = 0.475
 
+        h1 = self.hoardInLeftmostHole(board, self.mySide)
+        h2 = self.hoardOnMySide(board, self.mySide)
+        h3 = self.possibleMoves(board, self.mySide)
+        h4 = self.seedsInStore(board, self.mySide)
+        h5 = self.isPreviousMoveFromRight
+        h6 = self.seedsInStore(board, Side.opposite(self.mySide))
+        h7 = self.isPreviousMoveFromLeft
 
-        h1 = self.hoardInLeftmostHole(board, side)
-        h2 = self.hoardOnMySide(board, side)
-        h3 = self.possibleMoves(board, side)
-        h4 = self.seedsInStore(board, side)
-        h5 = self.isMoveFromRightMostHole(board, side)
-        h6 = self.seedsInStore(board, Side.opposite(side))
-        h7 = self.move_first_possible(board, side)
+        return h1 * w1 + h2 * w2 + h3 * w3 + h4 * w4 + h5 * w5 - h6 * w6 + h7 * w7
 
-        return h1 * w1 + h2 * w2 + h3 * w3 + h4 * w4 + h5 * w5 + h6 * w6 + h7 * w7
+    def isMoveFromLeftMostHole(self, board, side, move):
+        result = 0
 
-    def move_first_possible(self, board, side):
-        copy_board = board
-        score = 0
-        for hole in range (1, 8):
-            if not copy_board.getSeeds(side, hole) == 0:
-                score = 1
-        return score
+        for i in range(1, 8):
+            if board.getSeeds(side, i) != 0:
+                if move == i:
+                    result = 1
+                break
+        return result
 
     def seedsInStore(self, board, side):
         # Calculate a score based on how many seeds are in the store based on the move
@@ -98,9 +106,12 @@ class Minimax:
                 score += 1
         return score
 
-    def isMoveFromRightMostHole(self, board, side):
+    def isMoveFromRightMostHole(self, board, side, move):
         result = 0
 
-        if board.getSeeds(side, 7) != 0:
-            result = 1
+        for i in range(7, 0, -1):
+            if board.getSeeds(side, i) != 0:
+                if move == i:
+                    result = 1
+                break
         return result

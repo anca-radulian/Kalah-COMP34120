@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import sys
+
 from Board import Board
 from Kalah import Kalah
 from Side import Side
@@ -10,6 +11,10 @@ from Protocol import Protocol
 from InvalidMessageException import InvalidMessageException
 from IOException import IOException
 from Minimax import Minimax
+
+import multiprocessing
+
+results = []
 
 """
 The main application class. It also provides methods for communication
@@ -77,22 +82,34 @@ def main():
 
 # returns the move
 def calculateNextBestMove(board, side):
-    scores = [-9999] * 8
-    maxScore = -9999
-    maxScoreIndex = -1
+    results.clear()
     kalah = Kalah(board)
+    pool = multiprocessing.Pool()
     for i in range(1, 8):
-        move = Move(side, i)
-        if kalah.isLegalMove(move):
-            newKalah = Kalah(board.copyBoard(board))
-            newKalah.makeMove(move)
-            scores[i] = Minimax(side).minimax(newKalah, -9999, 9999, side, 8)
+        pool.apply_async(simulateNextMoves, args=(i, kalah, board, side), callback=collect_result)
 
-        if maxScore < scores[i]:
-            maxScoreIndex = i
-            maxScore = scores[i]
+    pool.close()
+    pool.join()
 
-    return maxScoreIndex
+    results.sort(key=lambda x: x[0])
+    results_final = [r for i, r in results]
+
+    return results_final[-1]
+
+
+def simulateNextMoves(i, kalah, board, side):
+    move = Move(side, i)
+    if kalah.isLegalMove(move):
+        newKalah = Kalah(board.copyBoard(board))
+        newKalah.makeMove(move)
+        return Minimax(side).minimax(newKalah, -9999, 9999, side, 9), i
+    else:
+        return -9999, i
+
+
+def collect_result(result):
+    global results
+    results.append(result)
 
 
 main()
