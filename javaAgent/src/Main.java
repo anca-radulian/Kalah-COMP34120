@@ -117,8 +117,8 @@ public class Main
 
     public static int calculateNextBestMove(Board board, Side side)
     {
-        int [] scores = {-9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999};
-        int maxScore = -9999;
+        float [] scores = {-99999, -99999, -99999, -99999, -99999, -99999, -99999, -99999};
+        float maxScore = -99999;
         int maxScoreIndex = 0;
         Kalah kalah = new Kalah(board);
 
@@ -126,8 +126,8 @@ public class Main
             Move move = new Move(side, i);
             if (kalah.isLegalMove(move)){
                 Kalah newKalah = new Kalah(new Board(board));
-                newKalah.makeMove(move);
-                scores[i] = new MiniMax(side).minimax(newKalah, -9999, 9999, side, 11);
+               Side nextSide = newKalah.makeMove(move);
+                scores[i] = new MiniMax(side).minimax(newKalah, -9999, 9999, nextSide, 11);
             }
 
             if (maxScore <= scores[i]){
