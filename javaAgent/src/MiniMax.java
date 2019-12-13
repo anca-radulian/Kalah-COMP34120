@@ -1,5 +1,5 @@
-import static java.lang.Integer.max;
-import static java.lang.Integer.min;
+import static java.lang.Double.max;
+import static java.lang.Double.min;
 
 public class MiniMax {
 
@@ -11,7 +11,7 @@ public class MiniMax {
         this.mySide = side;
     }
 
-    int minimax(Kalah kalah_board, int alpha, int beta, Side side, int depth){
+    double minimax(Kalah kalah_board, double alpha, double beta, Side side, int depth){
         Board board = kalah_board.getBoard();
 
         if (depth == 0 || kalah_board.gameOver()){
@@ -19,7 +19,7 @@ public class MiniMax {
         }
 
         if (side == mySide) {
-            int max_evaluation = - 9999;
+            double max_evaluation = - 9999;
 
             for (int possible_move = 1; possible_move <= 7; possible_move++){
                 Board board_copy = new Board(board);
@@ -28,7 +28,7 @@ public class MiniMax {
                 if (kalah_copy.isLegalMove(move)){
                     isPreviousMoveFromRight = isMoveFromRightMostHole(board_copy, side, possible_move);
                     Side nextSide = kalah_copy.makeMove(move);
-                    int evaluation = minimax(kalah_copy, alpha, beta, nextSide, depth - 1);
+                    double evaluation = minimax(kalah_copy, alpha, beta, nextSide, depth - 1);
                     max_evaluation = max(max_evaluation, evaluation);
                     alpha = max(alpha, evaluation);
                     if (beta <= alpha)
@@ -38,7 +38,7 @@ public class MiniMax {
             return max_evaluation;
         }
         else {
-            int min_evaluation = 9999;
+            double min_evaluation = 9999;
             for (int possible_move = 1; possible_move <= 7; possible_move++){
                 Board board_copy = new Board(board);
                 Kalah kalah_copy = new Kalah(board_copy);
@@ -46,7 +46,7 @@ public class MiniMax {
 
                 if (kalah_copy.isLegalMove(move)){
                     Side nextSide = kalah_copy.makeMove(move);
-                    int evaluation = minimax(kalah_copy, alpha, beta, nextSide, depth - 1);
+                    double evaluation = minimax(kalah_copy, alpha, beta, nextSide, depth - 1);
                     min_evaluation = min(min_evaluation, evaluation);
                     beta = min(beta, evaluation);
                     if (beta <= alpha)
@@ -58,7 +58,7 @@ public class MiniMax {
     }
 
 
-    int evalHeuristics(Board board){
+    double evalHeuristics(Board board){
         double w1 = 0.198649;
         double w2 = 0.190084;
         double w3 = 0.370793;
@@ -66,14 +66,14 @@ public class MiniMax {
         double w5 = 0.418841;
         double w6 = 0.565937;
 
-        int h1 = hoardInLeftmostHole(board, mySide);
-        int h2 = hoardOnMySide(board, mySide);
-        int h3 = possibleMoves(board, mySide);
-        int h4 = seedsInStore(board, mySide);
-        int h5 = isPreviousMoveFromRight;
-        int h6 = seedsInStore(board, mySide.opposite());
+        double h1 = hoardInLeftmostHole(board, mySide);
+        double h2 = hoardOnMySide(board, mySide);
+        double h3 = possibleMoves(board, mySide);
+        double h4 = seedsInStore(board, mySide);
+        double h5 = isPreviousMoveFromRight;
+        double h6 = seedsInStore(board, mySide.opposite());
 
-        return (int)(h1 * w1 + h2 * w2 + h3 * w3 + h4 * w4 + h5 * w5 - h6 * w6);
+        return h1 * w1 + h2 * w2 + h3 * w3 + h4 * w4 + h5 * w5 - h6 * w6;
     }
 
     int seedsInStore(Board board, Side side){

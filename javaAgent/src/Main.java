@@ -3,6 +3,52 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.*;
+
+class MyRunnable implements Runnable {
+    private int i;
+    private Kalah kalah;
+    private Board board;
+    private Side side;
+    private boolean iStart;
+    private Map<Integer, Double> results;
+
+    public MyRunnable(int i, Kalah kalah, Board board, Side side, boolean iStart, Map<Integer, Double> results) {
+        this.i = i;
+        this.kalah = kalah;
+        this.board = board;
+        this.side = side;
+        this.iStart = iStart;
+        this.results = results;
+    }
+
+    private double simulateNextMoves(int i, Kalah kalah, Board board, Side side, boolean iStart) {
+        Move move;
+        if(!iStart)
+            // If opponent moves first
+            move = new Move(side.opposite(), i);
+        else
+            // If we move first
+            move = new Move(side, i);
+        if (kalah.isLegalMove(move)){
+            Kalah newKalah = new Kalah(new Board(board));
+            Side nextSide = newKalah.makeMove(move);
+            return new MiniMax(side).minimax(newKalah, -9999, 9999, nextSide, 11);
+        }
+        else {
+            return -9999;
+        }
+    }
+
+    @Override
+    public void run() {
+        double result = simulateNextMoves(this.i, this.kalah, this.board, this.side, this.iStart);
+
+        synchronized(this.results) {
+            this.results.put(this.i, result);
+        }
+    }
+}
 
 /**
  * The main application class. It also provides methods for communication
@@ -14,7 +60,6 @@ public class Main
      * Input from the game engine.
      */
     private static Reader input = new BufferedReader(new InputStreamReader(System.in));
-    private static int generalMaxScore;
 
     /**
      * Sends a message to the game engine.
@@ -78,17 +123,17 @@ public class Main
                             if (interpretStateMsg.again && interpretStateMsg.move == -1) {
                                 Side.mySide = Side.mySide.opposite();
                                 // he swaped
-                                int move = calculateNextBestMove(board, Side.mySide, true);
+                                int move = calculateNextBestMove(board, Side.mySide, true).getKey();
                                 makeBestMove(move);
                             }
                             else if (interpretStateMsg.again && n != 0) {
                                     // check if we don't swap
-                                    int notSwapMove = calculateNextBestMove(board, Side.mySide, true);
-                                    int notSwapScore = generalMaxScore;
+                                    Map.Entry<Integer, Double> moveAndScore = calculateNextBestMove(board, Side.mySide, true);
+                                    int notSwapMove = moveAndScore.getKey();
+                                    double notSwapScore = moveAndScore.getValue();
 
                                     // check if we swap - we change side, next to move is opponent
-                                    calculateNextBestMove(board, Side.mySide.opposite(), false);
-                                    int swapScore = generalMaxScore;
+                                    double swapScore = calculateNextBestMove(board, Side.mySide.opposite(), false).getValue();
 
                                     if(swapScore >= notSwapScore){
                                         Side.mySide = Side.mySide.opposite();
@@ -98,7 +143,7 @@ public class Main
                                         makeBestMove(notSwapMove);
                             }
                             else if (interpretStateMsg.again) {
-                                int move = calculateNextBestMove(board, Side.mySide, true); // Stab
+                                int move = calculateNextBestMove(board, Side.mySide, true).getKey();
                                 makeBestMove(move);
                             }
                             n = 0;
@@ -117,37 +162,29 @@ public class Main
         }
     }
 
-    public static int calculateNextBestMove(Board board, Side side, boolean iStart)
+    public static Map.Entry<Integer, Double> calculateNextBestMove(Board board, Side side, boolean iStart)
     {
-        int [] scores = {-9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999};
-        int maxScore = -9999;
-        int maxScoreIndex = 0;
+        Map<Integer, Double> results = Collections.synchronizedMap(new HashMap<>());
+        List<Thread> threads = new ArrayList<>();
+
         Kalah kalah = new Kalah(board);
 
-        Side nextSide;
-        for (int i = 1; i <= 7; i++){
-            Move move;
-            if(!iStart)
-                // If opponent moves first
-                move = new Move(side.opposite(), i);
-            else
-                // If we move first
-                move = new Move(side, i);
+        for (int i = 1; i <= 7; i++) {
+            threads.add(new Thread(new MyRunnable(i, kalah, board, side, iStart, results)));
+            threads.get(i - 1).start();
+        }
 
-            if (kalah.isLegalMove(move)){
-                Kalah newKalah = new Kalah(new Board(board));
-                nextSide = newKalah.makeMove(move);
-                scores[i] = new MiniMax(side).minimax(newKalah, -9999, 9999, nextSide, 11);
-            }
-
-            if (maxScore <= scores[i]){
-                maxScoreIndex = i;
-                maxScore = scores[i];
-                generalMaxScore = maxScore;
+        for (int i = 0; i < 7; i++) {
+            try {
+                threads.get(i).join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
 
-        return maxScoreIndex;
+        Map.Entry<Integer, Double> maxEntry = Collections.max(results.entrySet(), Comparator.comparing(Map.Entry::getValue));
+
+        return maxEntry;
     }
 
     static {
