@@ -14,6 +14,7 @@ public class Main
      * Input from the game engine.
      */
     private static Reader input = new BufferedReader(new InputStreamReader(System.in));
+    private static int generalMaxScore;
 
     /**
      * Sends a message to the game engine.
@@ -77,22 +78,27 @@ public class Main
                             if (interpretStateMsg.again && interpretStateMsg.move == -1) {
                                 Side.mySide = Side.mySide.opposite();
                                 // he swaped
-                                int move = calculateNextBestMove(board, Side.mySide); // Stab
+                                int move = calculateNextBestMove(board, Side.mySide, true);
                                 makeBestMove(move);
                             }
                             else if (interpretStateMsg.again && n != 0) {
-                                if (interpretStateMsg.move <= 2) {
-                                    // we swap
-                                    Side.mySide = Side.mySide.opposite();
-                                    sendMsg(Protocol.createSwapMsg());
-                                }
-                                else {
-                                    int move = calculateNextBestMove(board, Side.mySide); // stab
-                                    makeBestMove(move);
-                                }
+                                    // check if we don't swap
+                                    int notSwapMove = calculateNextBestMove(board, Side.mySide, true);
+                                    int notSwapScore = generalMaxScore;
+
+                                    // check if we swap - we change side, next to move is opponent
+                                    calculateNextBestMove(board, Side.mySide.opposite(), false);
+                                    int swapScore = generalMaxScore;
+
+                                    if(swapScore >= notSwapScore){
+                                        Side.mySide = Side.mySide.opposite();
+                                        sendMsg(Protocol.createSwapMsg());
+                                    }
+                                    else
+                                        makeBestMove(notSwapMove);
                             }
                             else if (interpretStateMsg.again) {
-                                int move = calculateNextBestMove(board, Side.mySide); // Stab
+                                int move = calculateNextBestMove(board, Side.mySide, true); // Stab
                                 makeBestMove(move);
                             }
                             n = 0;
@@ -111,7 +117,7 @@ public class Main
         }
     }
 
-    public static int calculateNextBestMove(Board board, Side side)
+    public static int calculateNextBestMove(Board board, Side side, boolean iStart)
     {
         int [] scores = {-9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999};
         int maxScore = -9999;
@@ -120,7 +126,14 @@ public class Main
 
         Side nextSide;
         for (int i = 1; i <= 7; i++){
-            Move move = new Move(side, i);
+            Move move;
+            if(!iStart)
+                // If opponent moves first
+                move = new Move(side.opposite(), i);
+            else
+                // If we move first
+                move = new Move(side, i);
+
             if (kalah.isLegalMove(move)){
                 Kalah newKalah = new Kalah(new Board(board));
                 nextSide = newKalah.makeMove(move);
@@ -130,6 +143,7 @@ public class Main
             if (maxScore <= scores[i]){
                 maxScoreIndex = i;
                 maxScore = scores[i];
+                generalMaxScore = maxScore;
             }
         }
 
