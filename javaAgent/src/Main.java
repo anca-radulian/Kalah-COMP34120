@@ -95,10 +95,6 @@ public class Main
                                 int move = calculateNextBestMove(board, Side.mySide); // Stab
                                 makeBestMove(move);
                             }
-//                            else {
-//                                node = node.getChild(interpretStateMsg.move);
-//                                node.addNewLayer();
-//                            }
                             n = 0;
                             continue;
                         }
@@ -117,16 +113,17 @@ public class Main
 
     public static int calculateNextBestMove(Board board, Side side)
     {
-        float [] scores = {-99999, -99999, -99999, -99999, -99999, -99999, -99999, -99999};
-        float maxScore = -99999;
+        int [] scores = {-9999, -9999, -9999, -9999, -9999, -9999, -9999, -9999};
+        int maxScore = -9999;
         int maxScoreIndex = 0;
         Kalah kalah = new Kalah(board);
 
+        Side nextSide;
         for (int i = 1; i <= 7; i++){
             Move move = new Move(side, i);
             if (kalah.isLegalMove(move)){
                 Kalah newKalah = new Kalah(new Board(board));
-               Side nextSide = newKalah.makeMove(move);
+                nextSide = newKalah.makeMove(move);
                 scores[i] = new MiniMax(side).minimax(newKalah, -9999, 9999, nextSide, 11);
             }
 
